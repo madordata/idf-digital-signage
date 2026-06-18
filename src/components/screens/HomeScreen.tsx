@@ -1,93 +1,150 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CalendarDots, Star } from '@phosphor-icons/react';
-import { getUpcomingHolidays } from '@/lib/hebrewUtils';
+import { getUpcomingHolidays, getNext7Days } from '@/lib/hebrewUtils';
+import idfSpirit from '@/assest/idf-spirit.png';
+import doh1 from '@/assest/doh1.png';
 
 export function HomeScreen() {
-  const holidays = getUpcomingHolidays();
+  const days = getNext7Days();
+  const holidays = getUpcomingHolidays(4);
 
   return (
-    <div className="h-full flex flex-col gap-6 p-8">
-      <div className="bg-gradient-to-r from-accent/20 to-secondary/20 rounded-xl p-8 border-4 border-accent">
-        <div className="text-center">
-          <div className="text-8xl mb-4">🎖️</div>
-          <h2 className="text-6xl font-bold text-foreground mb-2" style={{ fontFamily: 'Rubik' }} dir="rtl">
-            רוח צה״ל
-          </h2>
-          <p className="text-3xl text-muted-foreground" style={{ fontFamily: 'Assistant' }} dir="rtl">
-            מחויבים למצוינות • מחויבים לשליחות
-          </p>
+    <div className="h-full flex overflow-hidden">
+
+      {/* ── Left content column ───────────────────────────── */}
+      <div className="flex-1 flex flex-col gap-4 p-6 min-w-0">
+
+        {/* 7-day calendar strip */}
+        <div className="flex gap-2 flex-shrink-0" dir="rtl">
+          {days.map((day, i) => (
+            <div
+              key={i}
+              className={`flex-1 flex flex-col items-center justify-center gap-1 py-4 px-1 rounded-xl border-2 ${
+                day.isToday
+                  ? 'bg-accent/15 border-accent shadow-lg shadow-accent/20'
+                  : 'bg-card/40 border-border/40'
+              }`}
+            >
+              {/* Short day name — א׳ ב׳ … */}
+              <span
+                className={`text-2xl font-bold ${day.isToday ? 'text-accent' : 'text-muted-foreground'}`}
+                style={{ fontFamily: 'Rubik' }}
+              >
+                {day.shortDayName}
+              </span>
+
+              {/* Gregorian day number — big */}
+              <span
+                className={`text-6xl font-bold leading-none ${day.isToday ? 'text-accent' : 'text-foreground'}`}
+                style={{ fontFamily: 'Rubik' }}
+              >
+                {day.dayNum}
+              </span>
+
+              {/* Hebrew day gematria */}
+              <span
+                className="text-xl text-muted-foreground"
+                style={{ fontFamily: 'Assistant' }}
+              >
+                {day.hebrewDayGematria}
+              </span>
+
+              {/* Holiday badge (if any) */}
+              {day.holidays.length > 0 && (
+                <span
+                  className="text-base font-bold text-yellow-300 text-center px-1 leading-tight mt-1"
+                  style={{ fontFamily: 'Assistant' }}
+                >
+                  {day.holidays[0]}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Holiday countdown circles */}
+        <div className="flex gap-6 justify-around items-start flex-shrink-0 py-2" dir="rtl">
+          {holidays.map((h, i) => (
+            <div key={i} className="flex flex-col items-center gap-2">
+              {/* Countdown circle */}
+              <div className="w-36 h-36 rounded-full border-4 border-accent bg-card/60 flex flex-col items-center justify-center shadow-lg shadow-accent/10">
+                <span
+                  className="text-5xl font-bold text-accent leading-none"
+                  style={{ fontFamily: 'Rubik' }}
+                >
+                  {h.days}
+                </span>
+                <span
+                  className="text-lg text-muted-foreground"
+                  style={{ fontFamily: 'Assistant' }}
+                >
+                  ימים
+                </span>
+              </div>
+
+              {/* Holiday name + date */}
+              <span
+                className="text-2xl font-bold text-foreground text-center"
+                style={{ fontFamily: 'Rubik' }}
+              >
+                {h.name}
+              </span>
+              <span
+                className="text-lg text-muted-foreground text-center"
+                style={{ fontFamily: 'Assistant' }}
+              >
+                {h.date}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Two action boxes */}
+        <div className="flex-1 min-h-0 grid grid-cols-2 gap-4">
+
+          {/* Box 1 — חייל שפר הופעתך */}
+          <div
+            className="flex items-center justify-center rounded-xl border-2 border-orange-400 bg-orange-500/10 px-6"
+            dir="rtl"
+          >
+            <span
+              className="text-5xl font-bold text-orange-300 text-center leading-snug"
+              style={{ fontFamily: 'Rubik' }}
+            >
+              חייל שפר הופעתך
+            </span>
+          </div>
+
+          {/* Box 2 — להזין דו״ח 1 */}
+          <div
+            className="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-yellow-400 bg-yellow-400/10 px-6 py-4"
+            dir="rtl"
+          >
+            <img
+              src={doh1}
+              alt="דו״ח 1"
+              className="h-32 w-32 object-contain"
+              draggable={false}
+            />
+            <span
+              className="text-5xl font-bold text-yellow-300 text-center leading-snug"
+              style={{ fontFamily: 'Rubik' }}
+            >
+              להזין דו״ח 1
+            </span>
+          </div>
+
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6 flex-1">
-        <Card className="bg-card border-2 border-accent/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-4" dir="rtl">
-              <CalendarDots size={48} weight="duotone" className="text-accent" />
-              <span className="text-4xl" style={{ fontFamily: 'Rubik' }}>חגים ומועדים קרובים</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4" dir="rtl">
-            {holidays.map((holiday, index) => (
-              <div key={index} className="flex items-center justify-between p-4 bg-primary/50 rounded-lg border border-border">
-                <div className="flex items-center gap-3">
-                  <Star size={32} weight="fill" className="text-accent" />
-                  <div>
-                    <div className="text-3xl font-bold text-foreground" style={{ fontFamily: 'Rubik' }}>
-                      {holiday.name}
-                    </div>
-                    <div className="text-xl text-muted-foreground" style={{ fontFamily: 'Assistant' }}>
-                      {holiday.date}
-                    </div>
-                  </div>
-                </div>
-                <Badge className="bg-secondary text-secondary-foreground text-xl px-4 py-2">
-                  בעוד {holiday.days} ימים
-                </Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-2 border-secondary/50">
-          <CardHeader>
-            <CardTitle className="text-4xl" style={{ fontFamily: 'Rubik' }} dir="rtl">
-              הודעות יומיות
-            </CardTitle>
-          </CardHeader>
-          <CardContent dir="rtl">
-            <div className="space-y-6">
-              <div className="p-6 bg-primary/50 rounded-lg border-r-4 border-accent">
-                <h3 className="text-3xl font-bold text-foreground mb-3" style={{ fontFamily: 'Rubik' }}>
-                  תדריך בטיחות שבועי
-                </h3>
-                <p className="text-2xl text-muted-foreground leading-relaxed" style={{ fontFamily: 'Assistant' }}>
-                  מתקיים מדי יום ראשון בשעה 08:00 בחדר ההרצאות הראשי. נוכחות חובה לכל אנשי היחידה.
-                </p>
-              </div>
-              
-              <div className="p-6 bg-primary/50 rounded-lg border-r-4 border-secondary">
-                <h3 className="text-3xl font-bold text-foreground mb-3" style={{ fontFamily: 'Rubik' }}>
-                  שעות קבלת קהל
-                </h3>
-                <p className="text-2xl text-muted-foreground leading-relaxed" style={{ fontFamily: 'Assistant' }}>
-                  מפקד היחידה מקבל ימים א׳-ה׳ בין השעות 14:00-16:00. ניתן לתאם פגישה דרך מזכירות היחידה.
-                </p>
-              </div>
-
-              <div className="p-6 bg-primary/50 rounded-lg border-r-4 border-destructive">
-                <h3 className="text-3xl font-bold text-foreground mb-3" style={{ fontFamily: 'Rubik' }}>
-                  תזכורת חשובה
-                </h3>
-                <p className="text-2xl text-muted-foreground leading-relaxed" style={{ fontFamily: 'Assistant' }}>
-                  אבטחת מידע היא אחריות אישית של כל חייל וחיילת. יש לשמור על נהלים בכל עת.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* ── Right side — IDF Spirit image, full height, pixel-perfect ratio 1358×1900 ── */}
+      <div className="flex-shrink-0 h-full overflow-hidden" style={{ aspectRatio: '1358 / 1900' }}>
+        <img
+          src={idfSpirit}
+          alt="רוח צה״ל"
+          className="w-full h-full object-cover"
+          draggable={false}
+        />
       </div>
+
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
   API_BASE_URL,
   SCREEN_ROTATION_INTERVAL,
   TICKER_REFRESH_INTERVAL,
+  FADE_TRANSITION_DURATION,
 } from '@/lib/config';
 
 const screens = [
@@ -71,7 +72,7 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
+            transition={{ duration: FADE_TRANSITION_DURATION, ease: 'easeInOut' }}
             className="h-full w-full"
           >
             <CurrentScreenComponent />

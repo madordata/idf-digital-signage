@@ -1,1 +1,25 @@
-{}
+{
+  "extend": {
+    "colors": {
+      "background": "#050B1F",
+      "foreground": "#F1F5FB",
+      "card": "#13244A",
+      "card-foreground": "#F1F5FB",
+      "popover": "#13244A",
+      "popover-foreground": "#F1F5FB",
+      "primary": "#0F1F44",
+      "primary-foreground": "#F1F5FB",
+      "secondary": "#1E3A6B",
+      "secondary-foreground": "#F1F5FB",
+      "muted": "#11203F",
+      "muted-foreground": "#CBD5E1",
+      "accent": "#3B82F6",
+      "accent-foreground": "#FFFFFF",
+      "destructive": "#DC2626",
+      "destructive-foreground": "#FFFFFF",
+      "border": "#2A3F6B",
+      "input": "#2A3F6B",
+      "ring": "#3B82F6"
+    }
+  }
+}
