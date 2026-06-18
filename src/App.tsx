@@ -8,8 +8,11 @@ import { ServicesScreen } from '@/components/screens/ServicesScreen';
 import { AnnouncementsScreen } from '@/components/screens/AnnouncementsScreen';
 import { SafetyScreen } from '@/components/screens/SafetyScreen';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const SCREEN_ROTATION_INTERVAL = 15000;
+import {
+  API_BASE_URL,
+  SCREEN_ROTATION_INTERVAL,
+  TICKER_REFRESH_INTERVAL,
+} from '@/lib/config';
 
 const screens = [
   { id: 'home', title: 'מסך הבית', component: HomeScreen },
@@ -30,7 +33,7 @@ function App() {
   useEffect(() => {
     const fetchUpdates = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/updates');
+        const response = await fetch(`${API_BASE_URL}/api/updates`);
         const data = await response.json();
         if (data.success && data.messages && data.messages.length > 0) {
           setTickerMessages(data.messages);
@@ -41,7 +44,7 @@ function App() {
     };
 
     fetchUpdates();
-    const updateInterval = setInterval(fetchUpdates, 60000);
+    const updateInterval = setInterval(fetchUpdates, TICKER_REFRESH_INTERVAL);
 
     return () => clearInterval(updateInterval);
   }, []);

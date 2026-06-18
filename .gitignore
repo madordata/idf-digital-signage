@@ -31,4 +31,8 @@ pids
 .file-manifest
 .devcontainer/
 
+# Generated backend data file (run `npm run seed` to create it)
+server/updates.xlsx
+updates.xlsx
+
 .spark-workbench-id

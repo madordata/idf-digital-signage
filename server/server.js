@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 4100;
 
 app.use(cors());
 app.use(express.json());
@@ -113,4 +113,13 @@ app.listen(PORT, () => {
   console.log(`🚀 Backend server running on http://localhost:${PORT}`);
   console.log(`📊 Excel file path: ${EXCEL_FILE_PATH}`);
   console.log(`📁 Excel file exists: ${fs.existsSync(EXCEL_FILE_PATH)}`);
+}).on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(
+      `❌ Port ${PORT} is already in use. Set a different PORT in your .env file ` +
+      `(and update VITE_API_URL to match), then restart.`
+    );
+    process.exit(1);
+  }
+  throw error;
 });
