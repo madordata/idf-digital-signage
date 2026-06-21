@@ -1,58 +1,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Storefront, ForkKnife, Barbell, Scissors, Church, FirstAid, Package } from '@phosphor-icons/react';
+import { useContent } from '@/lib/ContentContext';
 
-const services = [
-  {
-    icon: Storefront,
-    name: 'כוורת',
-    hours: ['א׳–ה׳: 08:00–20:00', 'ו׳: 08:00–14:00'],
-    location: 'בניין מרכזי, קומה 1',
-  },
-  {
-    icon: ForkKnife,
-    name: 'חד״א',
-    hours: ['בוקר: 06:30–08:00', 'צהריים: 12:00–13:30', 'ערב: 18:00–19:30'],
-    location: 'בניין האוכל',
-  },
-  {
-    icon: Barbell,
-    name: 'חד״כ',
-    hours: ['א׳–ה׳: 06:00–22:00', 'ו׳–ש׳: 08:00–18:00'],
-    location: 'בניין הספורט',
-  },
-  {
-    icon: Scissors,
-    name: 'מספרה',
-    hours: ['א׳, ג׳, ה׳: 14:00–17:00', 'ללא תור — לפי הגעה'],
-    location: 'ליד הכוורת',
-  },
-  {
-    icon: Church,
-    name: 'בית כנסת',
-    hours: ['פתוח בכל עת', 'שחרית: 06:30', 'מנחה-ערבית: לפי השקיעה'],
-    location: 'בניין מרכזי, קומה 2',
-  },
-  {
-    icon: FirstAid,
-    name: 'מרפאה',
-    hours: ['א׳–ה׳: 07:00–19:00', 'ו׳: 08:00–13:00', 'חירום: 24/7 — טלפון 101'],
-    location: 'בניין הרפואה',
-    urgent: true,
-  },
-  {
-    icon: Package,
-    name: 'אפסנאות',
-    hours: ['א׳, ג׳, ה׳: 09:00–12:00', 'קבלת ציוד בתיאום מראש'],
-    location: 'המחסן המרכזי',
-  },
-];
+// Icons are matched to services by name; falls back to a generic icon.
+const ICONS_BY_NAME: Record<string, typeof Storefront> = {
+  'כוורת': Storefront,
+  'חד״א': ForkKnife,
+  'חד״כ': Barbell,
+  'מספרה': Scissors,
+  'בית כנסת': Church,
+  'מרפאה': FirstAid,
+  'אפסנאות': Package,
+};
 
 export function ServicesScreen() {
+  const { services } = useContent();
+
   return (
     <div className="h-full p-8 overflow-hidden flex flex-col gap-0">
       <div className="grid grid-cols-4 grid-rows-2 gap-5 h-full">
         {services.map((service) => {
-          const Icon = service.icon;
+          const Icon = ICONS_BY_NAME[service.name] ?? Storefront;
           const borderColor = service.urgent ? 'border-destructive' : 'border-accent';
           const iconColor = service.urgent ? 'text-destructive' : 'text-accent';
           return (

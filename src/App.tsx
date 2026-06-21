@@ -8,12 +8,8 @@ import { ServicesScreen } from '@/components/screens/ServicesScreen';
 import { AnnouncementsScreen } from '@/components/screens/AnnouncementsScreen';
 import { SafetyScreen } from '@/components/screens/SafetyScreen';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  API_BASE_URL,
-  SCREEN_ROTATION_INTERVAL,
-  TICKER_REFRESH_INTERVAL,
-  FADE_TRANSITION_DURATION,
-} from '@/lib/config';
+import { SCREEN_ROTATION_INTERVAL, FADE_TRANSITION_DURATION } from '@/lib/config';
+import { ContentProvider, useContent } from '@/lib/ContentContext';
 
 const screens = [
   { id: 'home', title: 'מסך הבית', component: HomeScreen },
@@ -24,31 +20,9 @@ const screens = [
   { id: 'safety', title: 'בטיחות', component: SafetyScreen },
 ];
 
-function App() {
+function SignageApp() {
   const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
-  const [tickerMessages, setTickerMessages] = useState<string[]>([
-    'ברוכים הבאים ליחידה - מחויבים למצוינות תמיד',
-    'אנא שמרו על ניקיון והופעה ראויים בכל עת',
-  ]);
-
-  useEffect(() => {
-    const fetchUpdates = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/updates`);
-        const data = await response.json();
-        if (data.success && data.messages && data.messages.length > 0) {
-          setTickerMessages(data.messages);
-        }
-      } catch (error) {
-        console.warn('Failed to fetch ticker updates, using defaults', error);
-      }
-    };
-
-    fetchUpdates();
-    const updateInterval = setInterval(fetchUpdates, TICKER_REFRESH_INTERVAL);
-
-    return () => clearInterval(updateInterval);
-  }, []);
+  const { ticker } = useContent();
 
   useEffect(() => {
     const rotationInterval = setInterval(() => {
@@ -64,7 +38,7 @@ function App() {
   return (
     <div className="w-screen h-screen overflow-hidden bg-background">
       <Header currentScreenTitle={currentScreenTitle} />
-      
+
       <main className="fixed top-32 bottom-28 left-0 right-0 overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
@@ -80,8 +54,16 @@ function App() {
         </AnimatePresence>
       </main>
 
-      <Ticker messages={tickerMessages} />
+      <Ticker messages={ticker} />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ContentProvider>
+      <SignageApp />
+    </ContentProvider>
   );
 }
 

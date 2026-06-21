@@ -55,24 +55,42 @@ fullscreen TV mode.
 
 ### Run pieces individually
 
-| Command           | What it does                                              |
-| ----------------- | -------------------------------------------------------- |
-| `npm run dev`     | Frontend only (Vite dev server, port 5000/5001)          |
-| `npm run server`  | Backend only (Express API, port 4100)                    |
-| `npm run seed`    | Generate the sample `server/updates.xlsx`                |
-| `npm run dev:all` | Frontend **and** backend together (via `concurrently`)   |
-| `npm run build`   | Production build into `dist/`                             |
-| `npm run preview` | Preview the production build                              |
+| Command             | What it does                                              |
+| ------------------- | --------------------------------------------------------- |
+| `npm run dev`       | Frontend only (Vite dev server, port 5000/5001)           |
+| `npm run server`    | Backend only (Express API, port 4100)                     |
+| `npm run seed`      | Generate the sample `server/updates.xlsx`                 |
+| `npm run sheet:template` | Generate the editor spreadsheet template (XLSX + CSVs) |
+| `npm run dev:all`   | Frontend **and** backend together (via `concurrently`)    |
+| `npm run build`     | Production build into `dist/`                             |
+| `npm run preview`   | Preview the production build                              |
 
 The backend runs on `http://localhost:4100` and the frontend fetches ticker
-messages from it. If the backend is offline, the frontend falls back to built-in
-default messages.
+messages and screen content from it. If the backend is offline, the frontend
+falls back to built-in default content.
+
+### Editing content from Google Sheets
+
+All screen text (the ticker and every one of the 6 screens) can be managed from
+a single shared Google Sheet — non-developers edit the sheet and the display
+updates automatically. See **[GOOGLE_SHEETS_SETUP.md](GOOGLE_SHEETS_SETUP.md)**
+for the full setup. In short:
+
+1. `npm run sheet:template` to generate the editor template in
+   `google-sheets-template/` (a formatted `signage-content-template.xlsx` plus
+   CSV fallbacks).
+2. Upload the `.xlsx` to Google Drive and open it with Google Sheets (keeps all
+   tabs and formatting), then share it as "Anyone with the link: Viewer".
+3. Put the sheet id in `.env` as `GOOGLE_SHEET_ID` and restart.
+
+Leave `GOOGLE_SHEET_ID` empty to use the built-in default content.
 
 ### Configuration
 
 Environment variables (see `.env.example`):
 
 - `VITE_API_URL` — backend base URL used by the frontend (default `http://localhost:4100`)
+- `GOOGLE_SHEET_ID` — id of the Google Sheet that drives screen content (optional; empty = use defaults)
 - `PORT` — backend listening port (default `4100`)
 
 ## File Structure

@@ -1,10 +1,14 @@
 import { getUpcomingHolidays, getNext7Days } from '@/lib/hebrewUtils';
 import idfSpirit from '@/assest/idf-spirit.png';
 import doh1 from '@/assest/doh1.png';
+import madimImg from '@/assest/madim.png';
+import shoesImg from '@/assest/shoes.png';
+import { useContent } from '@/lib/ContentContext';
 
 export function HomeScreen() {
   const days = getNext7Days();
   const holidays = getUpcomingHolidays(4);
+  const { home } = useContent();
 
   return (
     <div className="h-full flex overflow-hidden">
@@ -102,14 +106,28 @@ export function HomeScreen() {
 
           {/* Box 1 — חייל שפר הופעתך */}
           <div
-            className="flex items-center justify-center rounded-xl border-2 border-orange-400 bg-orange-500/10 px-6"
+            className="relative flex items-center justify-center overflow-hidden rounded-xl border-2 border-orange-400 bg-orange-500/10 px-6 py-4"
             dir="rtl"
           >
+            {/* madim — bottom-left, tilted */}
+            <img
+              src={madimImg}
+              alt="מדים"
+              className="absolute -bottom-4 -left-3 h-32 w-auto object-contain opacity-40 drop-shadow-xl"
+              style={{ transform: 'rotate(-12deg)' }}
+            />
+            {/* shoes — bottom-right, tilted the other way */}
+            <img
+              src={shoesImg}
+              alt="נעליים"
+              className="absolute -bottom-2 -right-3 h-28 w-auto object-contain opacity-40 drop-shadow-xl"
+              style={{ transform: 'rotate(10deg)' }}
+            />
             <span
-              className="text-5xl font-bold text-orange-300 text-center leading-snug"
+              className="relative z-10 text-5xl font-bold text-orange-300 text-center leading-snug"
               style={{ fontFamily: 'Rubik' }}
             >
-              חייל שפר הופעתך
+              {home.box1Text}
             </span>
           </div>
 
@@ -128,7 +146,7 @@ export function HomeScreen() {
               className="text-5xl font-bold text-yellow-300 text-center leading-snug"
               style={{ fontFamily: 'Rubik' }}
             >
-              להזין דו״ח 1
+              {home.box2Text}
             </span>
           </div>
 

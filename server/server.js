@@ -4,6 +4,7 @@ import ExcelJS from 'exceljs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { getSiteContent, SHEET_CONFIGURED } from './googleSheets.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -85,7 +86,15 @@ async function readExcelFile() {
 
 app.get('/api/updates', async (req, res) => {
   try {
-    const messages = await readExcelFile();
+    // Prefer the Google Sheet ticker; fall back to the local Excel file, then
+    // to the static defaults. The display must never break.
+    let messages = null;
+    if (SHEET_CONFIGURED) {
+      const content = await getSiteContent();
+      if (content?.ticker?.length) messages = content.ticker;
+    }
+    if (!messages) messages = await readExcelFile();
+
     res.json({
       success: true,
       messages,
@@ -101,11 +110,35 @@ app.get('/api/updates', async (req, res) => {
   }
 });
 
+// Full site content (every editable screen) sourced from the Google Sheet.
+// Returns only the sections the sheet actually provides; the frontend merges
+// these over its built-in defaults, so missing/empty sections never break.
+app.get('/api/content', async (req, res) => {
+  try {
+    const content = (await getSiteContent()) || {};
+    res.json({
+      success: true,
+      configured: SHEET_CONFIGURED,
+      content,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error in /api/content:', error);
+    res.json({
+      success: false,
+      configured: SHEET_CONFIGURED,
+      content: {},
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    excelFileExists: fs.existsSync(EXCEL_FILE_PATH)
+    excelFileExists: fs.existsSync(EXCEL_FILE_PATH),
+    googleSheetConfigured: SHEET_CONFIGURED
   });
 });
 
@@ -113,6 +146,11 @@ app.listen(PORT, () => {
   console.log(`🚀 Backend server running on http://localhost:${PORT}`);
   console.log(`📊 Excel file path: ${EXCEL_FILE_PATH}`);
   console.log(`📁 Excel file exists: ${fs.existsSync(EXCEL_FILE_PATH)}`);
+  console.log(
+    SHEET_CONFIGURED
+      ? '📗 Google Sheet content source: ENABLED (GOOGLE_SHEET_ID set)'
+      : '📗 Google Sheet content source: disabled (set GOOGLE_SHEET_ID to enable)'
+  );
 }).on('error', (error) => {
   if (error.code === 'EADDRINUSE') {
     console.error(

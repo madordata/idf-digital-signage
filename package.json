@@ -5,8 +5,9 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "server": "node server/server.js",
+        "server": "node --env-file-if-exists=.env server/server.js",
         "seed": "node server/seed-excel.js",
+        "sheet:template": "node server/generate-sheet-template.js",
         "dev:all": "concurrently -n web,api -c blue,green \"npm run dev\" \"npm run server\"",
         "build": "tsc -b --noCheck && vite build",
         "lint": "eslint .",
