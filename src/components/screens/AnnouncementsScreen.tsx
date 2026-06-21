@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bell, Cigarette, MapPin } from '@phosphor-icons/react';
 import { useContent } from '@/lib/ContentContext';
+import noSmokeImg from '@/assest/nosmoke.png';
 
 export function AnnouncementsScreen() {
   const { announcements } = useContent();
@@ -10,39 +11,37 @@ export function AnnouncementsScreen() {
 
   return (
     // In global RTL layout: first DOM child → RIGHT column, second → LEFT column
-    <div className="h-full grid grid-cols-2 gap-6 p-8" style={{ minHeight: 0, gridTemplateRows: '1fr' }}>
+    <div className="h-full grid gap-6 p-8" style={{ minHeight: 0, gridTemplateRows: '1fr', gridTemplateColumns: '3fr 2fr' }}>
 
       {/* RIGHT column — פינות עישון + דרכי הגעה (first in DOM = right side in RTL) */}
-      <div className="flex flex-col gap-0 min-h-0">
-        <Card className="bg-card border-4 border-accent rounded-b-none flex-1 min-h-0 overflow-hidden flex flex-col">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-4" dir="rtl">
-              <Cigarette size={48} weight="duotone" className="text-accent" />
-              <span className="text-4xl" style={{ fontFamily: 'Rubik' }}>פינות עישון</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent dir="rtl" className="space-y-3 overflow-hidden flex-1">
-            {smokingHeader && (
-              <div className="p-4 bg-amber-500/20 rounded-lg border-2 border-amber-500">
-                <p className="text-2xl leading-relaxed text-foreground font-bold" style={{ fontFamily: 'Assistant' }}>
-                  {smokingHeader}
-                </p>
-              </div>
-            )}
-            {smokingRest.map((line) => (
-              <div key={line} className="p-4 bg-primary/50 rounded-lg">
-                <p className="text-2xl leading-relaxed text-foreground" style={{ fontFamily: 'Assistant' }}>
-                  {line}
-                </p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+      <div className="flex flex-col gap-3 min-h-0">
 
-        {/* Cyan divider between the two right-column sections */}
-        <div className="h-1 bg-accent opacity-60" />
+        {/* Smoking — compact sticker-style, auto height */}
+        <div className="relative bg-card border-2 border-amber-500/70 rounded-xl p-3 flex flex-col gap-2">
+          <img
+            src={noSmokeImg}
+            alt="אסור לעשן"
+            className="absolute -left-4 -top-4 w-32 h-32 rounded-full object-cover border-2 border-amber-500/60 shadow-lg"
+            style={{ rotate: '-12deg' }}
+          />
+          <div className="flex items-center gap-3 pb-1 border-b border-amber-500/40" dir="rtl">
+            <Cigarette size={28} weight="duotone" className="text-amber-400 shrink-0" />
+            <span className="text-2xl font-bold text-amber-300" style={{ fontFamily: 'Rubik' }}>פינות עישון</span>
+          </div>
+          {smokingHeader && (
+            <div className="px-3 py-1.5 bg-amber-500/15 rounded-md border border-amber-500/50" dir="rtl">
+              <p className="text-xl font-semibold text-foreground" style={{ fontFamily: 'Assistant' }}>{smokingHeader}</p>
+            </div>
+          )}
+          {smokingRest.map((line) => (
+            <div key={line} className="px-3 py-1.5 bg-primary/40 rounded-md" dir="rtl">
+              <p className="text-xl text-foreground" style={{ fontFamily: 'Assistant' }}>{line}</p>
+            </div>
+          ))}
+        </div>
 
-        <Card className="bg-card border-4 border-accent border-t-0 rounded-t-none flex-1 min-h-0 overflow-hidden flex flex-col">
+        {/* Directions — takes the rest of the column */}
+        <Card className="bg-card border-4 border-accent flex-1 min-h-0 overflow-hidden flex flex-col">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-4" dir="rtl">
               <MapPin size={48} weight="duotone" className="text-accent" />

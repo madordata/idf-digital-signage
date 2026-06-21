@@ -17,8 +17,7 @@ export function Ticker({ messages }: TickerProps) {
     }
   }, [messages]);
 
-  const combinedMessage = displayMessages.join('  •  ');
-  const repeatedMessage = `${combinedMessage}  •  ${combinedMessage}  •  ${combinedMessage}`;
+  const combinedMessage = displayMessages.join('  •  ') + '  •  ';
 
   return (
     <footer
@@ -38,8 +37,11 @@ export function Ticker({ messages }: TickerProps) {
             className="animate-marquee whitespace-nowrap"
             style={{ animationDuration: `${TICKER_SPEED_SECONDS}s` }}
           >
-            <span className="text-3xl font-semibold text-foreground" style={{ fontFamily: 'Assistant' }} dir="rtl">
-              {repeatedMessage}
+            <span className="text-3xl font-semibold text-foreground flex-shrink-0" style={{ fontFamily: 'Assistant' }} dir="rtl">
+              {combinedMessage}
+            </span>
+            <span className="text-3xl font-semibold text-foreground flex-shrink-0" style={{ fontFamily: 'Assistant' }} dir="rtl" aria-hidden="true">
+              {combinedMessage}
             </span>
           </div>
         </div>
