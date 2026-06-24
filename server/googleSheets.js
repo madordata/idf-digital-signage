@@ -21,6 +21,7 @@ const SHEET_ID = process.env.GOOGLE_SHEET_ID || '';
 const TABS = {
   ticker: 'Ticker',
   home: 'Home',
+  appearance: 'Appearance',
   services: 'Services',
   discipline: 'Discipline',
   procedures: 'Procedures',
@@ -185,6 +186,26 @@ function parseHome(rows) {
   return Object.keys(home).length ? home : null;
 }
 
+function parseAppearance(rows) {
+  const sections = [];
+  let current = null;
+  for (const r of rows) {
+    const title = pick(r, 'כותרת', 'title', 'מקטע', 'section');
+    const item = pick(r, 'פריט', 'item', 'תוכן', 'body', 'text');
+    if (title) {
+      if (!current || current.title !== title) {
+        current = { title, items: [] };
+        sections.push(current);
+      }
+    }
+    if (item && current) {
+      current.items.push(...splitLines(item));
+    }
+  }
+  const cleaned = sections.filter((s) => s.title && s.items.length);
+  return cleaned.length ? { sections: cleaned } : null;
+}
+
 function parseServices(rows) {
   const services = rows
     .map((r) => {
@@ -294,6 +315,7 @@ export function buildContent(tabs) {
   const content = {
     ticker: parseTicker(tabs.ticker || []),
     home: parseHome(tabs.home || []),
+    appearance: parseAppearance(tabs.appearance || []),
     services: parseServices(tabs.services || []),
     discipline: parseDiscipline(tabs.discipline || []),
     procedures: parseProcedures(tabs.procedures || []),
@@ -322,20 +344,30 @@ export async function getSiteContent() {
     return cache.content;
   }
 
-  const [ticker, home, services, discipline, procedures, announcements, safety] =
-    await Promise.all([
-      fetchTab(TABS.ticker),
-      fetchTab(TABS.home),
-      fetchTab(TABS.services),
-      fetchTab(TABS.discipline),
-      fetchTab(TABS.procedures),
-      fetchTab(TABS.announcements),
-      fetchTab(TABS.safety),
-    ]);
+  const [
+    ticker,
+    home,
+    appearance,
+    services,
+    discipline,
+    procedures,
+    announcements,
+    safety,
+  ] = await Promise.all([
+    fetchTab(TABS.ticker),
+    fetchTab(TABS.home),
+    fetchTab(TABS.appearance),
+    fetchTab(TABS.services),
+    fetchTab(TABS.discipline),
+    fetchTab(TABS.procedures),
+    fetchTab(TABS.announcements),
+    fetchTab(TABS.safety),
+  ]);
 
   const cleaned = buildContent({
     ticker,
     home,
+    appearance,
     services,
     discipline,
     procedures,

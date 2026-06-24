@@ -63,6 +63,15 @@ export interface HomeContent {
   dailyNote: string;
 }
 
+export interface AppearanceSection {
+  title: string;
+  items: string[];
+}
+
+export interface AppearanceContent {
+  sections: AppearanceSection[];
+}
+
 export interface AnnouncementsContent {
   board: AnnouncementItem[];
   smoking: string[];
@@ -74,6 +83,7 @@ export interface AnnouncementsContent {
 export interface SiteContent {
   ticker: string[];
   home: HomeContent;
+  appearance: AppearanceContent;
   procedures: ProceduresContent;
   discipline: DisciplineBlock[];
   services: ServiceItem[];
@@ -113,6 +123,26 @@ export const DEFAULT_CONTENT: SiteContent = {
     dailyNote: '',
   },
 
+  appearance: {
+    sections: [
+      {
+        title: 'הקדמה',
+        items: [
+          'המשמעת בעלת חשיבות מרבית להבטחת פעילותו התקינה של צה״ל, והיא תנאי הכרחי לביצוע מלא ויעיל של המשימות המוטלות עליו.',
+          'חיילי ומפקדי צה״ל יקפידו על הופעה מסודרת ותקנית בכל עת.',
+        ],
+      },
+      {
+        title: 'הוראות הלבוש לבאים במחנות צה״ל',
+        items: [
+          'לא תותר כניסה בלבוש לא הולם למחנות צה״ל או באופן שאינו מכבד את כללי השירות המשותף.',
+          'חייל יקפיד על כלל הוראות הקבע של הופעה ולבוש בצורה תקנית ומסודרת.',
+          'חייל ילבש מדי שירות בכל עת שהוא בתפקיד או במסגרת צבאית, מבין פריטי הלבוש שקיבל מצה״ל ומפורטים בתעודת ציודו האישי (טופס 1004) בלבד, אלא אם נקבע אחרת בפקודות הצבא או לפיהן.',
+        ],
+      },
+    ],
+  },
+
   procedures: {
     card1: {
       subtitle: 'מרכז התמודדות ותמיכה',
@@ -134,13 +164,13 @@ export const DEFAULT_CONTENT: SiteContent = {
 
   discipline: [
     {
-      title: 'הופעה ולבוש',
-      subtitle: 'מדי אלף — מגולח, מהודק, מגוהץ',
+      title: 'היתר גידול זקן',
+      subtitle: 'ההיתר תקף לכל משך השירות, בכפוף לעמידה בקריטריונים',
       items: [
-        'תספורת תקנית לפי נהלי צה״ל',
-        'נעליים מצוחצחות ואחידות נקיות',
-        'תגיות שם על כל פריט ביגוד',
-        'בדיקות הופעה מתקיימות מדי יום',
+        'גידול זקן מותר בהתאם לרצון הפרט, ובלבד שהוא מסודר והולם הופעה צבאית נאותה',
+        'זקן מלא מהפאות עד הסנטר (כולל שפם), ללא ביצוע “מדרגות”',
+        'מותר לסדר את הזקן והשפם, אך אין לקצצו עד כדי זיפים',
+        'חובה למלא הצהרה; פגיעה בנראות הזקן תוביל לשלילת ההיתר',
       ],
     },
     {
@@ -320,6 +350,13 @@ export function resolveContent(
     ticker: arrayOr(p.ticker, d.ticker),
 
     home: { ...d.home, ...(p.home ?? {}) },
+
+    appearance: {
+      sections: arrayOr(
+        p.appearance?.sections as AppearanceSection[] | undefined,
+        d.appearance.sections,
+      ),
+    },
 
     procedures: {
       card1: { ...d.procedures.card1, ...(p.procedures?.card1 ?? {}) },

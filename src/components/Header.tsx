@@ -4,7 +4,7 @@ import { getHebrewDayName, getHebrewDate, getGregorianDate, formatTime } from '@
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { WEATHER_REFRESH_INTERVAL } from '@/lib/config';
-import idfBadge from '@/assest/Badge_of_the_Israeli_Defense_Forces_2022_version.svg';
+import idfBadge from '@/assest/PakmazLogo.svg.png';
 import unitLogo from '@/assest/white logo.png';
 
 // Jerusalem coordinates (Asia/Jerusalem timezone)
@@ -27,8 +27,8 @@ function getWeatherMeta(code: number): { label: string; iconKey: string } {
   if (code >= 51 && code <= 57)                 return { label: 'טפטוף',           iconKey: 'CloudRain' };
   if (code >= 61 && code <= 67)                 return { label: 'גשם',             iconKey: 'CloudRain' };
   if (code >= 71 && code <= 77)                 return { label: 'שלג',             iconKey: 'CloudSnow' };
-  if (code >= 80 && code <= 82)                 return { label: 'מקלחות גשם',      iconKey: 'CloudRain' };
-  if (code === 85 || code === 86)               return { label: 'מקלחות שלג',      iconKey: 'CloudSnow' };
+  if (code >= 80 && code <= 82)                 return { label: 'סופת גשם',      iconKey: 'CloudRain' };
+  if (code === 85 || code === 86)               return { label: 'סופת שלג',      iconKey: 'CloudSnow' };
   if (code === 95)                              return { label: 'סופת רעמים',      iconKey: 'CloudLightning' };
   if (code === 96 || code === 99)               return { label: 'סופת ברד',        iconKey: 'CloudLightning' };
   return { label: 'בהיר', iconKey: 'Sun' };

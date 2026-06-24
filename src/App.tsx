@@ -5,6 +5,7 @@ import { Ticker } from '@/components/Ticker';
 import { HomeScreen } from '@/components/screens/HomeScreen';
 import { ProceduresScreen } from '@/components/screens/ProceduresScreen';
 import { DisciplineScreen } from '@/components/screens/DisciplineScreen';
+import { AppearanceScreen } from '@/components/screens/AppearanceScreen';
 import { ServicesScreen } from '@/components/screens/ServicesScreen';
 import { AnnouncementsScreen } from '@/components/screens/AnnouncementsScreen';
 import { SafetyScreen } from '@/components/screens/SafetyScreen';
@@ -16,6 +17,7 @@ const screens = [
   { id: 'home', title: 'מסך הבית', component: HomeScreen },
   { id: 'procedures', title: 'מסך נהלים', component: ProceduresScreen },
   { id: 'discipline', title: 'מסך משמעת', component: DisciplineScreen },
+  { id: 'appearance', title: 'הופעה ולבוש', component: AppearanceScreen },
   { id: 'services', title: 'שירותי היחידה', component: ServicesScreen },
   { id: 'announcements', title: 'הודעות', component: AnnouncementsScreen },
   { id: 'safety', title: 'בטיחות', component: SafetyScreen },
