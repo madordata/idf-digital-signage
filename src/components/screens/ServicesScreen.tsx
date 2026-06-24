@@ -42,7 +42,7 @@ export function ServicesScreen() {
                   </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent dir="rtl" className="flex flex-col gap-2 overflow-hidden">
+              <CardContent dir="rtl" className="flex flex-col gap-2 overflow-hidden flex-1">
                 <p className="text-xl font-bold text-accent" style={{ fontFamily: 'Rubik' }}>
                   שעות פעילות:
                 </p>

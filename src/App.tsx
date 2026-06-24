@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import bgImage from '@/assest/background 02.png';
 import { Header } from '@/components/Header';
 import { Ticker } from '@/components/Ticker';
 import { HomeScreen } from '@/components/screens/HomeScreen';
@@ -36,7 +37,10 @@ function SignageApp() {
   const currentScreenTitle = screens[currentScreenIndex].title;
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-background">
+    <div
+      className="w-screen h-screen overflow-hidden"
+      style={{ backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+    >
       <Header currentScreenTitle={currentScreenTitle} />
 
       <main className="fixed top-32 bottom-28 left-0 right-0 overflow-hidden">

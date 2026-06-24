@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bell, Cigarette, MapPin } from '@phosphor-icons/react';
 import { useContent } from '@/lib/ContentContext';
-import noSmokeImg from '@/assest/nosmoke.png';
+import noSmokeImg from '@/assest/lungesmoke.png';
 
 export function AnnouncementsScreen() {
   const { announcements } = useContent();
@@ -11,18 +11,18 @@ export function AnnouncementsScreen() {
 
   return (
     // In global RTL layout: first DOM child → RIGHT column, second → LEFT column
-    <div className="h-full grid gap-6 p-8" style={{ minHeight: 0, gridTemplateRows: '1fr', gridTemplateColumns: '3fr 2fr' }}>
+    <div className="h-full grid gap-6 p-8" style={{ minHeight: 0, gridTemplateRows: '1fr', gridTemplateColumns: '3fr 1.5fr' }}>
 
       {/* RIGHT column — פינות עישון + דרכי הגעה (first in DOM = right side in RTL) */}
-      <div className="flex flex-col gap-3 min-h-0">
+      <div className="flex flex-col gap-3 min-h-0" style={{ overflow: 'visible' }}>
 
-        {/* Smoking — compact sticker-style, auto height */}
-        <div className="relative bg-card border-2 border-amber-500/70 rounded-xl p-3 flex flex-col gap-2">
+        {/* Smoking — sticker banner, height based on content */}
+        <div className="relative bg-card border-2 border-amber-500/70 rounded-xl p-4 flex flex-col gap-3" style={{ overflow: 'visible' }}>
           <img
             src={noSmokeImg}
             alt="אסור לעשן"
-            className="absolute -left-4 -top-4 w-32 h-32 rounded-full object-cover border-2 border-amber-500/60 shadow-lg"
-            style={{ rotate: '-12deg' }}
+            className="absolute -left-10 -top-6 w-80 h-80 rounded-full object-cover border-4 border-amber-500/70 shadow-2xl z-10"
+            style={{ rotate: '0deg' }}
           />
           <div className="flex items-center gap-3 pb-1 border-b border-amber-500/40" dir="rtl">
             <Cigarette size={28} weight="duotone" className="text-amber-400 shrink-0" />
@@ -40,7 +40,7 @@ export function AnnouncementsScreen() {
           ))}
         </div>
 
-        {/* Directions — takes the rest of the column */}
+        {/* Directions — takes remaining space */}
         <Card className="bg-card border-4 border-accent flex-1 min-h-0 overflow-hidden flex flex-col">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-4" dir="rtl">

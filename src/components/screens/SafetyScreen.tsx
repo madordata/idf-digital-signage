@@ -35,49 +35,51 @@ export function SafetyScreen() {
   const { safety } = useContent();
 
   return (
-    <div className="h-full grid grid-cols-3 gap-6 p-8" dir="rtl">
+    <div className="h-full grid grid-cols-3 gap-4 p-6 overflow-hidden" dir="rtl">
       {safety.map((card, index) => {
         const style = CARD_STYLES[index % CARD_STYLES.length];
         const { Icon } = style;
         return (
-          <Card key={card.title} className={`bg-card border-4 ${style.border}`}>
-            <CardHeader className="pb-4">
-              <CardTitle className="flex flex-col items-center gap-4">
-                <Icon size={72} weight="duotone" className={style.iconColor} />
-                <span className="text-5xl text-center" style={{ fontFamily: 'Rubik' }}>{card.title}</span>
+          <Card key={card.title} className={`flex flex-col h-full min-h-0 overflow-hidden bg-card border-4 ${style.border}`}>
+            <CardHeader className="pb-2 pt-4 shrink-0">
+              <CardTitle className="flex flex-col items-center gap-2">
+                <Icon size={64} weight="duotone" className={style.iconColor} />
+                <span className="text-5xl text-center leading-tight" style={{ fontFamily: 'Rubik' }}>{card.title}</span>
                 <span className={`text-2xl ${style.subtitleColor} text-center font-bold`} style={{ fontFamily: 'Assistant' }}>
                   {card.subtitle}
                 </span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert className={style.alert}>
+            <CardContent className="flex flex-col gap-2 flex-1 min-h-0 overflow-hidden pb-4">
+              <Alert className={`${style.alert} shrink-0`}>
                 <AlertDescription>
-                  <p className="text-2xl leading-relaxed text-foreground font-bold" style={{ fontFamily: 'Assistant' }}>
+                  <p className="text-2xl leading-snug text-foreground font-bold" style={{ fontFamily: 'Assistant' }}>
                     {card.alert}
                   </p>
                 </AlertDescription>
               </Alert>
 
               {card.critical && (
-                <div className="p-5 bg-destructive/30 rounded-lg border-4 border-destructive">
-                  <p className="text-3xl text-foreground font-black leading-relaxed text-center" style={{ fontFamily: 'Rubik' }}>
+                <div className="p-3 bg-destructive/30 rounded-lg border-4 border-destructive shrink-0">
+                  <p className="text-3xl text-foreground font-black leading-snug text-center" style={{ fontFamily: 'Rubik' }}>
                     {card.critical}
                   </p>
                 </div>
               )}
 
-              {card.items.map((item) => (
-                <div key={item} className="p-5 bg-primary/50 rounded-lg">
-                  <p className="text-2xl text-muted-foreground leading-relaxed" style={{ fontFamily: 'Assistant' }}>
-                    • {item}
-                  </p>
-                </div>
-              ))}
+              <div className="flex flex-col gap-1.5 flex-1 min-h-0">
+                {card.items.map((item) => (
+                  <div key={item} className="px-3 py-1.5 bg-primary/50 rounded-lg">
+                    <p className="text-xl text-muted-foreground leading-snug" style={{ fontFamily: 'Assistant' }}>
+                      • {item}
+                    </p>
+                  </div>
+                ))}
+              </div>
 
               {card.footer && (
-                <div className={`p-5 rounded-lg ${style.footer}`}>
-                  <p className="text-2xl text-foreground font-bold" style={{ fontFamily: 'Assistant' }}>
+                <div className={`p-3 rounded-lg shrink-0 ${style.footer}`}>
+                  <p className="text-2xl text-foreground font-bold text-center" style={{ fontFamily: 'Assistant' }}>
                     {card.footer}
                   </p>
                 </div>
