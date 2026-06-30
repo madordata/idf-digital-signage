@@ -142,6 +142,33 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Serve the production build (single-process kiosk mode).
+// When `dist/` exists (after `npm run build`) the same Express server that
+// exposes the API also serves the compiled React app, so the whole signage
+// runs on one port (4100) with no separate Vite dev server. The SPA fallback
+// returns index.html for any non-API route so client-side routing keeps working.
+// ---------------------------------------------------------------------------
+const DIST_DIR = path.join(__dirname, '..', 'dist');
+
+if (fs.existsSync(DIST_DIR)) {
+  app.use(express.static(DIST_DIR));
+
+  // SPA fallback: serve index.html for any non-API GET request.
+  // (Express 5 no longer accepts a bare '*' route, so use middleware.)
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' || req.path.startsWith('/api/')) return next();
+    res.sendFile(path.join(DIST_DIR, 'index.html'));
+  });
+
+  console.log(`🖥️  Serving production build from ${DIST_DIR}`);
+} else {
+  console.warn(
+    '⚠️  dist/ not found - run `npm run build` to serve the app from this server. ' +
+    'Until then only the /api endpoints are available here.'
+  );
+}
+
 app.listen(PORT, () => {
   console.log(`🚀 Backend server running on http://localhost:${PORT}`);
   console.log(`📊 Excel file path: ${EXCEL_FILE_PATH}`);

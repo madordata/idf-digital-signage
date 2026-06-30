@@ -7,7 +7,11 @@
 
 /** Base URL of the backend API that serves ticker messages. */
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL ?? 'http://localhost:4100';
+  import.meta.env.VITE_API_URL ??
+  // In a production build the Express server serves both the app and the API
+  // on the same origin (kiosk mode, port 4100), so a relative path is correct.
+  // During development the Vite dev server (5173) must reach the API on 4100.
+  (import.meta.env.PROD ? '' : 'http://localhost:4100');
 
 /** How often (ms) the rotating screens advance. */
 export const SCREEN_ROTATION_INTERVAL = 15000;
