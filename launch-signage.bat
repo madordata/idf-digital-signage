@@ -74,7 +74,7 @@ if not exist "dist\index.html" (
 
 :: --- Start the server watchdog (separate, auto-restarting window) -----
 echo [5/5] Starting signage server (auto-restart watchdog)...
-start "Signage Server" /min cmd /c "cd /d \"%PROJECT_DIR%\" & :loop & node --env-file-if-exists=.env server\server.js & echo Server stopped - restarting in 3s... & timeout /t 3 /nobreak >nul & goto loop"
+start "Signage Server" /min "%PROJECT_DIR%signage-server.bat"
 
 :: --- Wait until the server answers on /api/health -------------------
 echo Waiting for server to become healthy...
@@ -93,23 +93,17 @@ goto waithealth
 echo Server is up at %URL%
 
 :: --- Locate a Chromium browser --------------------------------------
+:: NOTE: each check is a SINGLE-LINE "if" on purpose. Using %ProgramFiles(x86)%
+:: inside a multi-line ( ... ) block breaks batch parsing because the ")" in
+:: "(x86)" closes the block early.
 set "BROWSER="
-set "BROWSER_KIND="
-if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" (
-    set "BROWSER=%ProgramFiles%\Google\Chrome\Application\chrome.exe"
-    set "BROWSER_KIND=chrome"
-) else if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" (
-    set "BROWSER=%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"
-    set "BROWSER_KIND=chrome"
-) else if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" (
-    set "BROWSER=%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"
-    set "BROWSER_KIND=edge"
-) else if exist "%ProgramFiles%\Microsoft\Edge\Application\msedge.exe" (
-    set "BROWSER=%ProgramFiles%\Microsoft\Edge\Application\msedge.exe"
-    set "BROWSER_KIND=edge"
-)
+if not defined BROWSER if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" set "BROWSER=%ProgramFiles%\Google\Chrome\Application\chrome.exe"
+if not defined BROWSER if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" set "BROWSER=%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"
+if not defined BROWSER if exist "%LocalAppData%\Google\Chrome\Application\chrome.exe" set "BROWSER=%LocalAppData%\Google\Chrome\Application\chrome.exe"
+if not defined BROWSER if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" set "BROWSER=%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"
+if not defined BROWSER if exist "%ProgramFiles%\Microsoft\Edge\Application\msedge.exe" set "BROWSER=%ProgramFiles%\Microsoft\Edge\Application\msedge.exe"
 
-if "%BROWSER%"=="" (
+if not defined BROWSER (
     echo [TIP] No Chrome/Edge found. Opening default browser - press F11 for full screen.
     start "" "%URL%"
     echo System active. Keep this window open.
@@ -117,22 +111,25 @@ if "%BROWSER%"=="" (
     exit /b 0
 )
 
-:: Hardening flags shared by Chrome and Edge (both Chromium based)
-set "FLAGS=--kiosk %URL% --user-data-dir=\"%KIOSK_PROFILE%\" --no-first-run --no-default-browser-check --disable-session-crashed-bubble --disable-infobars --noerrdialogs --disable-features=TranslateUI --disable-translate --disable-pinch --overscroll-history-navigation=0 --check-for-update-interval=31536000 --disable-component-update --autoplay-policy=no-user-gesture-required --start-fullscreen"
+:: Decide Chrome vs Edge so we can add the Edge-only kiosk flag.
+set "BROWSER_KIND=chrome"
+echo "%BROWSER%" | find /i "msedge" >nul && set "BROWSER_KIND=edge"
+
+:: Start with a clean kiosk profile every launch so a previous unclean shutdown
+:: can never leave a "restore pages" bubble on screen.
+if exist "%KIOSK_PROFILE%" rmdir /s /q "%KIOSK_PROFILE%" >nul 2>&1
+
+:: Hardening flags shared by Chrome and Edge (both Chromium based).
+:: The quotes around the profile path are REAL quotes (not \" ) so the path is
+:: passed correctly even if it contains spaces.
+set "FLAGS=--kiosk %URL% --user-data-dir="%KIOSK_PROFILE%" --no-first-run --no-default-browser-check --disable-session-crashed-bubble --disable-infobars --noerrdialogs --disable-features=TranslateUI --disable-translate --overscroll-history-navigation=0 --check-for-update-interval=31536000 --disable-component-update --autoplay-policy=no-user-gesture-required --start-fullscreen"
 if "%BROWSER_KIND%"=="edge" set "FLAGS=%FLAGS% --edge-kiosk-type=fullscreen"
 
-echo Launching %BROWSER_KIND% in kiosk mode...
+echo Launching %BROWSER_KIND% in kiosk mode at %URL% ...
 
 :: --- Browser watchdog loop ------------------------------------------
 :browserloop
-:: Clear any "did not shut down correctly / restore pages" state so a power
-:: cut never leaves a restore bubble on screen.
-if exist "%KIOSK_PROFILE%\Default\Preferences" (
-    powershell -NoProfile -Command "$p='%KIOSK_PROFILE%\Default\Preferences'; $j=Get-Content $p -Raw; $j=$j -replace '\"exit_type\":\"[^\"]*\"','\"exit_type\":\"Normal\"' -replace '\"exited_cleanly\":false','\"exited_cleanly\":true'; Set-Content $p $j -NoNewline" >nul 2>&1
-)
-
 start "" /wait "%BROWSER%" %FLAGS%
-
 echo Browser closed - relaunching in 3s... (close this window to stop the signage)
 timeout /t 3 /nobreak >nul
 goto browserloop

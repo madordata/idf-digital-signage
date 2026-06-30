@@ -13,7 +13,8 @@ and recovers automatically from crashes or power cuts.
 | One process / one port | [`server/server.js`](server/server.js) | The Express server now serves **both** the compiled React app **and** the API on a single port **4100**. No separate Vite dev server in production. |
 | Same‑origin API | [`src/lib/config.ts`](src/lib/config.ts) | In a production build the frontend calls the API with a **relative path**, so it just works on `http://localhost:4100`. |
 | Run scripts | [`package.json`](package.json) | Added `npm start` (build → serve) and `npm run kiosk`. |
-| Kiosk launcher | [`launch-signage.bat`](launch-signage.bat) | Builds if needed, starts the server with an **auto‑restart watchdog**, waits until it is healthy, then opens Chrome/Edge in hardened **full‑screen kiosk** mode. A second watchdog **reopens the browser** if it is closed, and the Chrome "restore pages" popup is suppressed. |
+| Kiosk launcher | [`launch-signage.bat`](launch-signage.bat) | Builds if needed, starts the server watchdog, waits until it is healthy, then opens Chrome/Edge in hardened **full‑screen kiosk** mode. A watchdog **reopens the browser** if it is closed, and a **fresh kiosk profile** is used each launch so the Chrome "restore pages" popup never appears. |
+| Server watchdog | [`signage-server.bat`](signage-server.bat) | Runs `server/server.js` and **auto‑restarts** it if it ever stops. Started minimized by the launcher; you don't run it directly. |
 | Auto‑start setup | [`setup-autostart.ps1`](setup-autostart.ps1) | One‑time script that registers a Windows **Task Scheduler** task ("IDF Signage", runs at logon, restart‑on‑failure) and disables sleep / monitor‑timeout / screensaver. |
 
 ### How content is loaded (unchanged, online‑first)
@@ -28,11 +29,15 @@ fails, it quietly falls back to the next source.
 ```
 launch-signage.bat
    ├─ builds dist/ (first run only)
-   ├─ starts: node server/server.js  ──► http://localhost:4100  (app + API)
-   │     └─ watchdog restarts it if it crashes
+   ├─ starts signage-server.bat (minimized window)
+   │     └─ node server/server.js ──► http://localhost:4100  (app + API)
+   │           └─ auto-restarts if it crashes
    └─ opens Chrome/Edge --kiosk http://localhost:4100  (full screen)
          └─ watchdog reopens it if it is closed
 ```
+
+> Two windows appear: a **black launcher** window and a minimized
+> **"Signage Server"** window. Both must stay open while the signage runs.
 
 ---
 
@@ -95,7 +100,7 @@ launches full‑screen by itself.
 | Update the ticker / screen text | Edit the **Google Sheet** (online) or `server/updates.xlsx` (local). Changes appear automatically within ~1 minute. |
 | Apply a code change | Run `npm run build` once, then restart (or just reboot). |
 | Start manually | Double‑click `launch-signage.bat`. |
-| Stop the signage | Close the black **launcher** window (and the "Signage Server" window). |
+| Stop the signage | Close the black **launcher** window **and** the minimized **"Signage Server"** window. |
 | Run the kiosk now (test) | `schtasks /run /tn "IDF Signage"` |
 | Turn OFF auto‑start | `schtasks /delete /tn "IDF Signage" /f` |
 
@@ -106,7 +111,8 @@ launches full‑screen by itself.
 | Symptom | Fix |
 | --- | --- |
 | Browser not full screen | The launcher uses `--kiosk`; if a non‑Chrome/Edge browser opened, install **Google Chrome**, then re‑run. As a stopgap press **F11**. |
-| "Restore pages" popup after power cut | Already suppressed by the launcher. If it ever appears, it will be cleared on the next relaunch. |
+| "Restore pages" popup after power cut | Suppressed: the launcher wipes the kiosk profile on every start, so it never appears. |
+| Chrome opens but shows a server/error page instead of the signage | Delete the `dist` folder and run `launch-signage.bat` again to force a fresh build. Make sure the build step finished without errors. |
 | Screen goes black / sleeps | Re‑run `setup-autostart.ps1` (it disables sleep & screensaver). |
 | Ticker shows default text only | No internet **and** no `server/updates.xlsx`. Add the Excel file or connect the network. |
 | Port 4100 already in use | The launcher frees it automatically on start; otherwise reboot. |
