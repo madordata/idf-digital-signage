@@ -1,4 +1,4 @@
-import idfSpirit from '@/assest/idf-spirit.png';
+import idfSpirit from '@/assest/badges-zahal.jpg';
 import madimImg from '@/assest/madim.png';
 import { useContent } from '@/lib/ContentContext';
 
@@ -13,7 +13,7 @@ export function AppearanceScreen() {
         <img
           src={idfSpirit}
           alt="רוח צה״ל"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           draggable={false}
         />
       </div>
@@ -33,7 +33,7 @@ export function AppearanceScreen() {
             className="text-6xl font-bold text-white leading-none"
             style={{ fontFamily: 'Rubik' }}
           >
-            הופעה ולבוש
+            משמעת הופעה ולבוש
           </h1>
         </div>
 

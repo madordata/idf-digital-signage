@@ -4,9 +4,11 @@ import { defineConfig, PluginOption } from "vite";
 
 import sparkPlugin from "@github/spark/spark-vite-plugin";
 import createIconImportProxy from "@github/spark/vitePhosphorIconProxyPlugin";
+// @ts-ignore
 import { resolve } from 'path'
 
-const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
+// @ts-ignore
+const projectRoot = (typeof process !== 'undefined' && process.env.PROJECT_ROOT) || (import.meta as any).dirname || '';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -17,6 +19,14 @@ export default defineConfig({
     createIconImportProxy() as PluginOption,
     sparkPlugin() as PluginOption,
   ],
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
+  preview: {
+    port: 5173,
+    strictPort: true,
+  },
   resolve: {
     alias: {
       '@': resolve(projectRoot, 'src')

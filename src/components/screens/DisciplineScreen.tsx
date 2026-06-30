@@ -44,12 +44,12 @@ export function DisciplineScreen() {
             </CardHeader>
             <CardContent dir="rtl" className={`flex gap-4 overflow-hidden min-h-0 flex-1 transition-all ${hasQr ? 'pl-[280px]' : ''}`}>
               <div className="flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden">
-                <ul className="flex flex-col gap-2 flex-1 min-h-0">
+                <ul className="flex flex-col gap-2 flex-1 min-h-0 justify-center">
                   {items.map((item) => (
                     <li
                       key={item}
-                      className={`flex items-center bg-primary/50 rounded-lg text-foreground flex-1 min-h-0 px-3 py-2 ${
-                        hasQr ? 'text-xl leading-snug' : 'text-2xl leading-tight'
+                      className={`flex items-center bg-primary/50 rounded-lg text-foreground px-3 py-1.5 ${
+                        hasQr ? 'text-lg leading-snug' : 'text-2xl leading-tight flex-1 min-h-0'
                       }`}
                       style={{ fontFamily: 'Assistant' }}
                     >
