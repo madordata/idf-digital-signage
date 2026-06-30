@@ -33,7 +33,8 @@ if %errorlevel% neq 0 (
 :: Free up ports 5173 and 4100 if they are currently occupied to avoid port collision
 echo [1/4] Checking and clearing ports 5173 & 4100...
 echo [1/4] בודק ומפנה פורטים בשימוש...
-powershell -Command "Get-Process -Id (Get-NetTCPConnection -LocalPort 5173,4100 -ErrorAction SilentlyContinue).OwningProcess -ErrorAction SilentlyContinue | Stop-Process -Force" >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5173 ^| findstr LISTENING') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :4100 ^| findstr LISTENING') do taskkill /f /pid %%a >nul 2>&1
 
 :: Install dependencies if node_modules doesn't exist
 if not exist "node_modules\" (
@@ -66,7 +67,7 @@ start /b cmd /c "npm run dev:all"
 :: Wait for Vite to compile and start serving
 echo Waiting for server to initialize (6 seconds)...
 echo ממתין לעליית המערכת (6 שניות)...
-timeout /t 6 /nobreak >nul
+ping 127.0.0.1 -n 7 >nul
 
 :: Launch the default browser in Fullscreen/Kiosk Mode pointing to localhost:5173
 echo Launching browser in continuous full-screen view...
@@ -93,4 +94,4 @@ echo ✓ המערכת הופעלה בהצלחה!
 echo Keep this window open. Minimizing in 5 seconds...
 echo נא להשאיר חלון זה פתוח (ניתן למזער אותו). נסגר זמנית עוד 5 שניות...
 echo =====================================================================
-timeout /t 5 >nul
+ping 127.0.0.1 -n 6 >nul
